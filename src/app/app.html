@@ -1,10 +1,28 @@
 <div class="min-h-screen bg-white dark:bg-gray-900 transition-colors">
-  <header class="bg-indigo-600 dark:bg-indigo-800 text-white p-4 shadow-md sticky top-0 z-10">
-    <div class="container mx-auto flex justify-between items-center">
-      <div class="text-xl font-bold">
-        {{ title() }}
+  <header class="bg-indigo-600 dark:bg-indigo-800 text-white p-4 shadow-md sticky top-0 z-10 w-full">
+    <div class="container mx-auto flex flex-col lg:flex-row justify-between items-center gap-4">
+      <div class="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 w-full lg:w-auto justify-center lg:justify-start">
+        <div class="text-xl font-bold text-center">
+          {{ title() }}
+        </div>
+        <nav class="flex flex-wrap justify-center items-center gap-2">
+          <a routerLink="/people_that_come/automatic" routerLinkActive="!bg-white !text-indigo-700 shadow-md" class="bg-indigo-500 hover:bg-indigo-400 text-white font-semibold px-4 py-1.5 rounded shadow focus:outline-none focus:ring-2 focus:ring-white transition-colors text-sm">Auto</a>
+          <a routerLink="/people_that_come/manual" routerLinkActive="!bg-white !text-indigo-700 shadow-md" class="bg-indigo-500 hover:bg-indigo-400 text-white font-semibold px-4 py-1.5 rounded shadow focus:outline-none focus:ring-2 focus:ring-white transition-colors text-sm">Manual</a>
+        </nav>
       </div>
-      <div>
+      <div class="flex flex-wrap justify-center items-center gap-3 w-full lg:w-auto">
+        <!-- New Button for Drive Folder Config -->
+        <button 
+          type="button"
+          (click)="openDriveModal()"
+          class="bg-indigo-500 hover:bg-indigo-400 text-white font-semibold py-1.5 px-4 rounded shadow focus:outline-none focus:ring-2 focus:ring-white transition-colors text-sm flex items-center gap-2"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+          </svg>
+          Folder Config
+        </button>
+
         <label for="config-upload" class="sr-only">Subir archivo de configuración</label>
         <button 
           type="button"
@@ -32,6 +50,50 @@
   <main class="container mx-auto">
     <router-outlet />
   </main>
+
+  <!-- Drive Folder ID Modal -->
+  @if (isDriveModalOpen()) {
+    <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 flex items-center justify-center p-4">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md overflow-hidden flex flex-col">
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+          <h2 class="text-lg font-bold text-gray-900 dark:text-white">Configure Google Drive</h2>
+          <button (click)="closeDriveModal()" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
+        
+        <div class="p-6">
+          <label class="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300 border-gray-200">
+            Default Folder ID:
+          </label>
+          <!-- One-way bind the [value] and manually listen to (input) to update the temp signal -->
+          <input 
+            type="text" 
+            [value]="tempFolderId()"
+            (input)="tempFolderId.set($any($event.target).value)"
+            class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded py-2 px-3 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" 
+            placeholder="e.g. 1aBcDeFgHi..."
+          >
+          <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+            This ID will be permanently saved in your browser and used automatically when fetching files.
+          </p>
+        </div>
+
+        <div class="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
+          <button 
+            (click)="closeDriveModal()" 
+            class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            Cancel
+          </button>
+          <button 
+            (click)="saveDriveFolderId()" 
+            class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+  }
 
   @if (successMessage()) {
     <div class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 flex items-center gap-3">

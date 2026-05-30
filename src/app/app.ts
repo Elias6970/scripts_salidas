@@ -1,19 +1,24 @@
 import { Component, signal, inject } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { UserConfigService } from './services/user-config.service';
+import { DriveConfigService } from './services/drive-config.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
 export class App {
   private userConfigService = inject(UserConfigService);
+  protected driveConfigService = inject(DriveConfigService);
 
   protected readonly title = signal('Scripts para salidas');
   protected readonly isConfigLoading = signal(false);
   protected readonly successMessage = signal<string | null>(null);
+
+  protected readonly isDriveModalOpen = signal(false);
+  protected readonly tempFolderId = signal('');
 
   private successTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -42,5 +47,20 @@ export class App {
     this.successTimeout = setTimeout(() => {
       this.successMessage.set(null);
     }, 5000);
+  }
+
+  openDriveModal(): void {
+    // Populate the temporary signal with the existing saved ID
+    this.tempFolderId.set(this.driveConfigService.folderId());
+    this.isDriveModalOpen.set(true);
+  }
+
+  closeDriveModal(): void {
+    this.isDriveModalOpen.set(false);
+  }
+
+  saveDriveFolderId(): void {
+    this.driveConfigService.saveFolderId(this.tempFolderId());
+    this.closeDriveModal();
   }
 }

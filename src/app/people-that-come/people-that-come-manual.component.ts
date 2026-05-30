@@ -7,11 +7,11 @@ interface FileResult {
 }
 
 @Component({
-  selector: 'app-people-that-come',
+  selector: 'app-people-that-come-manual',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="p-6">
-      <h1 class="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">Músicos que vienen</h1>
+      <h1 class="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">Asistencia manual</h1>
       
       <div class="mb-6">
         <label for="excel-upload" class="sr-only">Sube tus archivos Excel</label>
@@ -113,7 +113,7 @@ interface FileResult {
     </div>
   `
 })
-export class PeopleThatComeComponent {
+export class PeopleThatComeManualComponent {
   private processingService = inject(XlsxProcessingService);
 
   readonly files = signal<File[]>([]);
